@@ -297,9 +297,7 @@ async function toggleTask(t,done){t.estado=done?'hecha':'abierta';t._justDone=do
   if(r.error){t.estado=done?'abierta':'hecha';render();showStatus('No se pudo guardar el cambio de la tarea.')}}
 
 // ---------- Dictado ----------
-var IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-// En iPhone/iPad el reconocimiento de voz del navegador no funciona dentro de la app instalada: se usa el micro del teclado.
-var SR=IOS?null:(window.SpeechRecognition||window.webkitSpeechRecognition);
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 function openDictation(prefill){
   openDrawer(function(p){
     p.appendChild(head('Dictar nota','Una visita, una llamada, una cita, una tarea, la reunión de equipo o cómo ha ido el día.'));
@@ -318,7 +316,9 @@ function openDictation(prefill){
         rec.onresult=function(e){var fin='',tmp='';for(var i=0;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript;else tmp+=e.results[i][0].transcript}ta.value=base+fin+tmp};
         rec.onerror=function(e){if(e.error==='not-allowed'||e.error==='service-not-allowed')hint.textContent='Permite el micrófono para esta app en los ajustes del navegador.';else if(e.error==='no-speech')hint.textContent='No te he oído. Pulsa y prueba otra vez.'};
         rec.onend=function(){rec=null;micB.classList.remove('rec');micB.setAttribute('aria-label','Empezar a dictar');if(hint.textContent.indexOf('escucho')>=0)hint.textContent='Listo. Revisa el texto y pulsa Procesar.'};
-        try{rec.start();micB.classList.add('rec');micB.setAttribute('aria-label','Parar');hint.textContent='Te escucho… pulsa otra vez para parar.'}catch(e){rec=null;hint.textContent='No he podido abrir el micrófono.'}
+        var got=false,r0=rec;var prevOn=rec.onresult;rec.onresult=function(e){got=true;prevOn(e)};
+        setTimeout(function(){if(!got&&rec===r0)hint.textContent='No me llega audio. Si sigue así, usa el micrófono del teclado sobre el cuadro de texto.'},7000);
+        try{rec.start();micB.classList.add('rec');micB.setAttribute('aria-label','Parar');hint.textContent='Te escucho… pulsa otra vez para parar.'}catch(e){rec=null;hint.textContent='No he podido abrir el micrófono. Usa el micrófono del teclado.'}
       });
     }else{
       var kb='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-5px"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg>';
