@@ -72,22 +72,31 @@
 
   <div class="body">
     <div class="main">
-      <section class="card" aria-labelledby="hRank">
-        <div class="between"><h2 id="hRank">A quién llamar hoy</h2><span class="small muted">Por urgencia y potencial</span></div>
-        <div class="rank" id="rank"></div>
-      </section>
-      <section class="card" aria-labelledby="hSemana">
-        <div class="between"><h2 id="hSemana">Tu semana</h2><span class="small muted" id="weekRange"></span></div>
-        <div class="week"><div class="week-grid" id="week"></div></div>
-      </section>
-      <section class="card" aria-labelledby="hTareas">
-        <div class="between"><h2 id="hTareas">Tareas</h2><span class="small muted" id="tCount"></span></div>
-        <div class="tgrid" id="tasks"></div>
-      </section>
-      <section class="card" aria-labelledby="hClientes">
-        <div class="between"><h2 id="hClientes">Clientes</h2><span class="small muted" id="cCount"></span></div>
-        <div class="row">
-          <input class="search" id="q" type="search" placeholder="Buscar por nombre u oficina" aria-label="Buscar cliente">
+      <details class="card sec" data-k="semana" open>
+        <summary><span class="sum-t">Tu semana</span><span class="small muted sum-s"><span id="weekRange"></span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div class="week"><div class="week-grid" id="week"></div></div>
+        </div>
+      </details>
+      <details class="card sec" data-k="tareas" open>
+        <summary><span class="sum-t">Tareas</span><span class="small muted sum-s"><span id="tCount"></span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div class="tgrid" id="tasks"></div>
+        </div>
+      </details>
+      <details class="card sec" data-k="rank" open>
+        <summary><span class="sum-t">A quién llamar hoy</span><span class="small muted sum-s">Por urgencia y potencial</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div class="rank" id="rank"></div>
+        </div>
+      </details>
+      <details class="card sec" data-k="clientes">
+        <summary><span class="sum-t">Clientes</span><span class="small muted sum-s"><span id="cCount"></span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div class="row">
+            <input class="search" id="q" type="search" placeholder="Buscar por nombre u oficina" aria-label="Buscar cliente">
+            <button class="btn" type="button" id="btnNuevo">+ Nuevo</button>
+          </div>
           <div class="chips" role="group" aria-label="Filtro">
             <button class="chip" type="button" data-f="prio" aria-pressed="true">Prioritarios</button>
             <button class="chip" type="button" data-f="vip" aria-pressed="false">VIP</button>
@@ -95,35 +104,47 @@
             <button class="chip" type="button" data-f="prospect" aria-pressed="false">Prospects</button>
             <button class="chip" type="button" data-f="all" aria-pressed="false">Todos</button>
           </div>
+          <div class="clist" id="clients"></div>
         </div>
-        <div class="clist" id="clients"></div>
-      </section>
-      <section class="card" aria-labelledby="hDiario">
-        <h2 id="hDiario">Diario</h2>
-        <div id="diary" style="display:flex;flex-direction:column;gap:12px"></div>
-      </section>
-      <section class="card" aria-labelledby="hReu">
-        <h2 id="hReu">Reuniones de equipo</h2>
-        <div id="reus" style="display:flex;flex-direction:column;gap:12px"></div>
-      </section>
+      </details>
+      <details class="card sec" data-k="diario">
+        <summary><span class="sum-t">Diario</span><span class="small muted sum-s"></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div id="diary" style="display:flex;flex-direction:column;gap:12px"></div>
+        </div>
+      </details>
+      <details class="card sec" data-k="reuniones">
+        <summary><span class="sum-t">Reuniones de equipo</span><span class="small muted sum-s"></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div id="reus" style="display:flex;flex-direction:column;gap:12px"></div>
+        </div>
+      </details>
     </div>
     <aside class="side">
-      <section class="card" aria-labelledby="hObj">
-        <div class="between"><h2 id="hObj">Objetivos 2026</h2><span class="xs muted" id="objUpd"></span></div>
-        <div id="obj" style="display:flex;flex-direction:column;gap:16px"></div>
-      </section>
-      <section class="card" aria-labelledby="hInc">
-        <h2 id="hInc">Incidencias abiertas</h2>
-        <div id="inc" style="display:flex;flex-direction:column;gap:10px"></div>
-      </section>
-      <section class="card" aria-labelledby="hDes">
-        <div style="display:flex;flex-direction:column;gap:2px"><h2 id="hDes">Hace tiempo que no les ves</h2><span class="small muted">Días sin contacto frente a su plazo</span></div>
-        <div id="des" style="display:flex;flex-direction:column;gap:14px"></div>
-      </section>
-      <section class="card" aria-labelledby="hPros">
-        <div class="between"><h2 id="hPros">Prospects</h2><span class="small muted" id="pCount"></span></div>
-        <div id="pros" style="display:flex;flex-direction:column;gap:8px"></div>
-      </section>
+      <details class="card sec" data-k="objetivos" open>
+        <summary><span class="sum-t">Objetivos 2026</span><span class="small muted sum-s"><span id="objUpd"></span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div id="obj" style="display:flex;flex-direction:column;gap:16px"></div>
+        </div>
+      </details>
+      <details class="card sec" data-k="incidencias" open>
+        <summary><span class="sum-t">Incidencias abiertas</span><span class="small muted sum-s"><span id="incCount"></span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div id="inc" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+      </details>
+      <details class="card sec" data-k="desatendidos">
+        <summary><span class="sum-t">Hace tiempo que no les ves</span><span class="small muted sum-s">Días sin contacto / plazo</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div id="des" style="display:flex;flex-direction:column;gap:14px"></div>
+        </div>
+      </details>
+      <details class="card sec" data-k="prospects">
+        <summary><span class="sum-t">Prospects</span><span class="small muted sum-s"><span id="pCount"></span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <div class="sec-b">
+          <div id="pros" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </details>
       <button class="btn" type="button" id="btnLogout" style="justify-content:center">Cerrar sesión</button>
     </aside>
   </div>
