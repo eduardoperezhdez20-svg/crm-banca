@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CRM Banca Patrimonial</title>
+<meta name="theme-color" content="#0E7C6B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CRM">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<section id="login" class="card login" hidden>
+  <h1 style="font-size:26px">CRM Banca Patrimonial</h1>
+  <p class="muted small" style="margin:0" id="loginHint">Entra con tu cuenta.</p>
+  <label for="email">Email</label>
+  <input id="email" type="email" autocomplete="username" inputmode="email">
+  <label for="pass">Contraseña</label>
+  <input id="pass" type="password" autocomplete="current-password">
+  <button class="btn primary" type="button" id="btnLogin" style="justify-content:center">Entrar</button>
+  <button class="btn" type="button" id="btnSignup" style="justify-content:center">Crear mi cuenta (solo la primera vez)</button>
+  <p class="err" id="loginErr" hidden></p>
+</section>
+
+<div id="app" hidden>
+<div id="ticker" class="ticker" role="region" aria-label="Mercados" hidden>
+  <div class="lbl">Mercados</div>
+  <div class="vp"><div class="tape" id="tape"></div></div>
+</div>
+
+<div class="wrap">
+  <header class="row" style="justify-content:space-between;align-items:flex-end;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <p class="eyebrow" id="today"></p>
+      <h1>Buenos días, Eduardo</h1>
+      <p class="muted" style="margin:0;font-size:16px" id="lead">Cargando tu cartera…</p>
+    </div>
+    <div class="row">
+      <button class="btn" type="button" id="btnMarket">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>Mercado hoy</button>
+      <a class="btn" id="btnMentor" target="_blank" rel="noopener" href="https://claude.ai/project/01a19c91-8981-7673-af2e-d3fb45c1ebc4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Mentor</a>
+      <button class="btn" type="button" id="btnPush" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Activar avisos</button>
+      <button class="btn primary" type="button" id="btnDictar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg>Dictar nota</button>
+    </div>
+  </header>
+
+  <p class="status" id="status" hidden></p>
+
+  <section class="kpis" aria-label="Resumen">
+    <div class="card kpi"><span class="small muted" style="font-weight:600">Citas esta semana</span><span class="n" id="kCitas">–</span><span class="small muted" id="kCitasSub"></span></div>
+    <div class="card kpi"><span class="small muted" style="font-weight:600">Tareas prioritarias</span><span class="n" style="color:var(--red)" id="kTareas">–</span><span class="small muted" id="kTareasSub"></span></div>
+    <div class="card kpi"><span class="small muted" style="font-weight:600">Incidencias abiertas</span><span class="n" style="color:var(--amber)" id="kInc">–</span><span class="small muted" id="kIncSub"></span></div>
+    <div class="card kpi"><span class="small muted" style="font-weight:600">Clientes desatendidos</span><span class="n" style="color:var(--blue)" id="kDes">–</span><span class="small muted" id="kDesSub"></span></div>
+  </section>
+
+  <section class="banner" id="pending" hidden>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-weight:700;color:var(--accent-ink)">¿Cómo fueron estas visitas?</span>
+      <span class="small" id="pendingList"></span>
+    </div>
+    <button class="btn" type="button" id="btnContar">Contármelo ahora</button>
+  </section>
+
+  <div class="body">
+    <div class="main">
+      <section class="card" aria-labelledby="hRank">
+        <div class="between"><h2 id="hRank">A quién llamar hoy</h2><span class="small muted">Por urgencia y potencial</span></div>
+        <div class="rank" id="rank"></div>
+      </section>
+      <section class="card" aria-labelledby="hSemana">
+        <div class="between"><h2 id="hSemana">Tu semana</h2><span class="small muted" id="weekRange"></span></div>
+        <div class="week"><div class="week-grid" id="week"></div></div>
+      </section>
+      <section class="card" aria-labelledby="hTareas">
+        <div class="between"><h2 id="hTareas">Tareas</h2><span class="small muted" id="tCount"></span></div>
+        <div class="tgrid" id="tasks"></div>
+      </section>
+      <section class="card" aria-labelledby="hClientes">
+        <div class="between"><h2 id="hClientes">Clientes</h2><span class="small muted" id="cCount"></span></div>
+        <div class="row">
+          <input class="search" id="q" type="search" placeholder="Buscar por nombre u oficina" aria-label="Buscar cliente">
+          <div class="chips" role="group" aria-label="Filtro">
+            <button class="chip" type="button" data-f="prio" aria-pressed="true">Prioritarios</button>
+            <button class="chip" type="button" data-f="vip" aria-pressed="false">VIP</button>
+            <button class="chip" type="button" data-f="traspaso" aria-pressed="false">Traspaso pendiente</button>
+            <button class="chip" type="button" data-f="prospect" aria-pressed="false">Prospects</button>
+            <button class="chip" type="button" data-f="all" aria-pressed="false">Todos</button>
+          </div>
+        </div>
+        <div class="clist" id="clients"></div>
+      </section>
+      <section class="card" aria-labelledby="hDiario">
+        <h2 id="hDiario">Diario</h2>
+        <div id="diary" style="display:flex;flex-direction:column;gap:12px"></div>
+      </section>
+      <section class="card" aria-labelledby="hReu">
+        <h2 id="hReu">Reuniones de equipo</h2>
+        <div id="reus" style="display:flex;flex-direction:column;gap:12px"></div>
+      </section>
+    </div>
+    <aside class="side">
+      <section class="card" aria-labelledby="hObj">
+        <div class="between"><h2 id="hObj">Objetivos 2026</h2><span class="xs muted" id="objUpd"></span></div>
+        <div id="obj" style="display:flex;flex-direction:column;gap:16px"></div>
+      </section>
+      <section class="card" aria-labelledby="hInc">
+        <h2 id="hInc">Incidencias abiertas</h2>
+        <div id="inc" style="display:flex;flex-direction:column;gap:10px"></div>
+      </section>
+      <section class="card" aria-labelledby="hDes">
+        <div style="display:flex;flex-direction:column;gap:2px"><h2 id="hDes">Hace tiempo que no les ves</h2><span class="small muted">Días sin contacto frente a su plazo</span></div>
+        <div id="des" style="display:flex;flex-direction:column;gap:14px"></div>
+      </section>
+      <section class="card" aria-labelledby="hPros">
+        <div class="between"><h2 id="hPros">Prospects</h2><span class="small muted" id="pCount"></span></div>
+        <div id="pros" style="display:flex;flex-direction:column;gap:8px"></div>
+      </section>
+      <button class="btn" type="button" id="btnLogout" style="justify-content:center">Cerrar sesión</button>
+    </aside>
+  </div>
+</div>
+
+<button class="fab" type="button" id="fab" aria-label="Dictar nota">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg>
+</button>
+</div>
+
+<div class="drawer" id="drawer" aria-hidden="true">
+  <button class="scrim" type="button" aria-label="Cerrar" data-close></button>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="dTitle" id="dPanel"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
