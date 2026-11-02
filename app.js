@@ -203,7 +203,15 @@ $('btnMarket').addEventListener('click',function(){openDrawer(function(p){var m=
     p.appendChild(sec('Noticias clave'));
     (m.noticias||[]).forEach(function(n){p.appendChild(el('article',{style:'display:flex;flex-direction:column;gap:8px;padding-bottom:16px;border-bottom:1px solid var(--line)'},[el('a',{href:n.url||'#',target:'_blank',rel:'noopener',style:'font-size:16px;font-weight:700;line-height:1.35;color:var(--ink);text-decoration:none',text:n.titular}),el('span',{cls:'xs muted',text:n.fuente||''}),n.afecta?el('div',{style:'display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:var(--accent-soft)'},[el('span',{cls:'xs',style:'font-weight:800;color:var(--accent-ink)',text:'A quién afecta'}),el('span',{style:'font-size:14px',text:n.afecta})]):null]))})}
   var rf=el('button',{type:'button',cls:'btn',style:'justify-content:center',text:'Actualizar ahora'});
-  rf.addEventListener('click',async function(){rf.disabled=true;rf.textContent='Actualizando… (hasta 1 minuto)';var r=await sb.functions.invoke('avisos?modo=mercado',{body:{}});if(r.error||!(r.data&&r.data.ok)){rf.textContent='No se pudo actualizar';rf.disabled=false}else{await load();closeDrawer();$('btnMarket').click()}});
+  rf.addEventListener('click',async function(){
+    rf.disabled=true;rf.textContent='Actualizando… (1-2 minutos, puedes cerrar esto)';
+    var antes=await sb.from('mercado').select('updated_at').eq('id','hoy').maybeSingle();var t0=antes.data?antes.data.updated_at:null;
+    var r=await sb.functions.invoke('avisos?modo=mercado',{body:{}});
+    if(r.error||!(r.data&&r.data.ok)){rf.textContent='No se pudo actualizar';rf.disabled=false;return}
+    var tries=0;var iv=setInterval(async function(){tries++;var n=await sb.from('mercado').select('updated_at').eq('id','hoy').maybeSingle();
+      if(n.data&&n.data.updated_at!==t0){clearInterval(iv);await load();if(drawer.classList.contains('open')&&$('dTitle')&&$('dTitle').textContent==='Mercado hoy'){closeDrawer();$('btnMarket').click()}}
+      else if(tries>=24){clearInterval(iv);rf.textContent='Está tardando más de lo normal. Vuelve a mirar en un rato.'}},5000);
+  });
   p.appendChild(rf);
   p.appendChild(el('a',{cls:'btn',href:'https://es.investing.com/markets/',target:'_blank',rel:'noopener',style:'justify-content:center',text:'Ver mercados en directo en Investing →'}));
 })});
