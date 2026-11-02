@@ -297,7 +297,9 @@ async function toggleTask(t,done){t.estado=done?'hecha':'abierta';t._justDone=do
   if(r.error){t.estado=done?'abierta':'hecha';render();showStatus('No se pudo guardar el cambio de la tarea.')}}
 
 // ---------- Dictado ----------
-var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+// En iPhone/iPad el reconocimiento de voz del navegador no funciona dentro de la app instalada: se usa el micro del teclado.
+var SR=IOS?null:(window.SpeechRecognition||window.webkitSpeechRecognition);
 function openDictation(prefill){
   openDrawer(function(p){
     p.appendChild(head('Dictar nota','Una visita, una llamada, una cita, una tarea, la reunión de equipo o cómo ha ido el día.'));
@@ -318,14 +320,19 @@ function openDictation(prefill){
         rec.onend=function(){rec=null;micB.classList.remove('rec');micB.setAttribute('aria-label','Empezar a dictar');if(hint.textContent.indexOf('escucho')>=0)hint.textContent='Listo. Revisa el texto y pulsa Procesar.'};
         try{rec.start();micB.classList.add('rec');micB.setAttribute('aria-label','Parar');hint.textContent='Te escucho… pulsa otra vez para parar.'}catch(e){rec=null;hint.textContent='No he podido abrir el micrófono.'}
       });
-    }else{hint.textContent='Tu navegador no permite dictar aquí: usa el micrófono del teclado.';p.appendChild(hint)}
+    }else{
+      var kb='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-5px"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg>';
+      var tip=el('div',{cls:'note',style:'display:flex;flex-direction:column;gap:4px;background:var(--accent-soft)'});
+      tip.innerHTML='<span style="font-weight:700;color:var(--accent-ink)">Para dictar</span><span class="small">Toca el cuadro de abajo y pulsa el micrófono del teclado '+kb+' (abajo, junto a la barra espaciadora). Habla y, al terminar, pulsa Procesar.</span>';
+      p.appendChild(tip);
+    }
     p.appendChild(ta);
     var file=null;var fi=el('input',{type:'file',accept:'image/*',id:'dictImg',style:'font-size:14px'});fi.addEventListener('change',function(){file=fi.files&&fi.files[0]||null});
     p.appendChild(el('div',{style:'display:flex;flex-direction:column;gap:6px'},[el('label',{for:'dictImg',cls:'small muted',text:'Foto de notas en papel (opcional)'}),fi]));
     var go=el('button',{type:'button',cls:'btn primary',style:'justify-content:center',text:'Procesar'});var out=el('div',{style:'display:flex;flex-direction:column;gap:10px'});
     p.appendChild(go);p.appendChild(out);
     go.addEventListener('click',function(){if(rec)try{rec.stop()}catch(e){};var txt=ta.value.trim();if(!txt&&!file){ta.focus();return}processNote(txt,file,go,out)});
-    setTimeout(function(){if(!SR)ta.focus()},50);
+    setTimeout(function(){if(!SR){ta.focus();var n=ta.value.length;try{ta.setSelectionRange(n,n)}catch(e){}}},350);
   });
 }
 $('btnDictar').addEventListener('click',function(){openDictation('')});

@@ -1,4 +1,4 @@
-var CACHE='crm-v3';
+var CACHE='crm-v4';
 var SHELL=['./','index.html','styles.css','app.js','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(SHELL)}));self.skipWaiting()});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}));self.clients.claim()});
